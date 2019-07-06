@@ -1,5 +1,6 @@
 """Basics of opencv image operations."""
 import cv2
+import numpy as np
 
 
 def normalize_images(image_1, image_2):
@@ -87,7 +88,22 @@ def to_gray(image):
     :param image: `numpy.ndarray` image as a multi dimensional np array.
     :return: `numpy.ndarray` gray image as a multi dimensional np array.
     """
-    return cv2.cvtColor(image, cv2.CV_RGBA2GRAY)
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+
+def rotate_image(image, angle, scale=1.0):
+    """Rotate image with angel with respect to the X-axis.
+
+    :param image: `numpy.ndarray` image as a multi dimensional np array.
+    :param array: `float` angle to calculate the rotation matrix.
+    :param scale: `float` image scale ratio
+    :return: `numpy.ndarray` gray image as a multi dimensional np array.
+    """
+    image_center = tuple(
+        np.array(image.shape[1::-1]) / 2)  # image.shape = X, Y, Z => [1::-1] =  Y, X => /2 = center
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, scale)
+    return cv2.warpAffine(
+        image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
 
 
 if __name__ == "__main__":
@@ -96,6 +112,6 @@ if __name__ == "__main__":
 
     image_1, image_2 = normalize_images(image_1, image_2)
 
-    res = add_images(image_1, image_2)
+    res = rotate_image(image_1, 30, 2.3)
 
     save_image("result.jpg", res)
